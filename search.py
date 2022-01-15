@@ -87,7 +87,54 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from game import Directions, Stack, Queue
+    North = Directions.NORTH
+    East = Directions.EAST
+    South = Directions.SOUTH
+    West = Directions.WEST
+    # (pos, successors)
+    fringe = Stack()
+    current = (problem.getStartState(), problem.getSuccessors(problem.getStartState()))
+    visitList = Stack()
+    count = 0
+    while not problem.isGoalState(current[0]) :
+        # print("on", current[0])
+        foundAVisit = False
+        if count == 25:
+            break
+        print("Successors for", current[0], current[1])
+        for i in current[1]:
+            if not checkVisited(i, visitList):
+                current[1].remove(i)
+                fringe.push(current)
+                visitList.push(current[0])
+                print("looking at ", i)
+                current = (i[0], problem.getSuccessors(i[0]))
+                foundAVisit = True
+                break
+        if not foundAVisit :
+            current = fringe.pop()
+        count += 1
+    directions = []
+    while not fringe.isEmpty():
+        dir = (fringe.pop()[1][1][1])
+        directions = [dir] + directions
+    return directions
+
+def checkVisited(current, visit):
+    from game import Stack
+    isVisited = False;
+    temp = Stack()
+    while not visit.isEmpty():
+        value = visit.pop()
+        temp.push(value)
+        if value == current[0]:
+            print("visited")
+            isVisited = True;
+            break;
+    while not temp.isEmpty():
+        visit.push(temp.pop())
+    return isVisited;
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
