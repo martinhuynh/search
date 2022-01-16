@@ -87,39 +87,50 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    from game import Directions, Stack, Queue
-    North = Directions.NORTH
-    East = Directions.EAST
-    South = Directions.SOUTH
-    West = Directions.WEST
-    # (pos, successors)
+    # Stack is LIFO so it will always continute to search the current node it's on DFS
+    from game import Stack
     fringe = Stack()
-    current = (problem.getStartState(), problem.getSuccessors(problem.getStartState()))
+    fringe.push((problem.getStartState(), []))
     visitList = Stack()
-    count = 0
-    while not problem.isGoalState(current[0]) :
-        # print("on", current[0])
-        foundAVisit = False
-        if count == 25:
-            break
-        print("Successors for", current[0], current[1])
-        for i in current[1]:
-            if not checkVisited(i, visitList):
-                current[1].remove(i)
-                fringe.push(current)
-                visitList.push(current[0])
-                print("looking at ", i)
-                current = (i[0], problem.getSuccessors(i[0]))
-                foundAVisit = True
-                break
-        if not foundAVisit :
-            current = fringe.pop()
-        count += 1
-    directions = []
-    while not fringe.isEmpty():
-        dir = (fringe.pop()[1][1][1])
-        directions = [dir] + directions
-    return directions
+    while fringe :
+        node, path = fringe.pop()
+        if not checkVisited(node, visitList):
+            visitList.push(node)
+            
+            if problem.isGoalState(node):
+                print("DONE", path)
+                return path
+            
+            for i in problem.getSuccessors(node) :
+                fringe.push((i[0], path + [i[1]]))
+                # print("VISIT PUSH", i[0])
+    return []
+
+def breadthFirstSearch(problem):
+    """Search the shallowest nodes in the search tree first."""
+    "*** YOUR CODE HERE ***"
+    # from game import Stack, Queue
+    # fringe = Queue()
+    # fringe.push(problem.getSuccessor(problem.getStartState))
+    # visitedList = Stack()
+
+    from game import Directions, Queue
+    fringe = Queue()
+    fringe.push((problem.getStartState(), []))
+    visitList = Queue()
+    while fringe :
+        node, path = fringe.pop()
+        if not checkVisited(node, visitList):
+            visitList.push(node)
+            
+            if problem.isGoalState(node):
+                print("DONE", path)
+                return path
+            
+            for i in problem.getSuccessors(node) :
+                fringe.push((i[0], path + [i[1]]))
+                # print("VISIT PUSH", i[0])
+    return []
 
 def checkVisited(current, visit):
     from game import Stack
@@ -128,22 +139,35 @@ def checkVisited(current, visit):
     while not visit.isEmpty():
         value = visit.pop()
         temp.push(value)
-        if value == current[0]:
-            print("visited")
+        if value == current:
+            # print("Visited", current)
             isVisited = True;
             break;
     while not temp.isEmpty():
         visit.push(temp.pop())
     return isVisited;
 
-def breadthFirstSearch(problem):
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+    from game import Directions, PriorityQueue, Stack
+    fringe = PriorityQueue()
+    fringe.push((problem.getStartState(), [], 0), 0)
+    visitList = Stack()
+    while fringe :
+        node, path, cost = fringe.pop()
+        if not checkVisited(node, visitList):
+            visitList.push(node)
+            
+            if problem.isGoalState(node):
+                # print("DONE", path)
+                return path
+            
+            for i in problem.getSuccessors(node) :
+                fringe.update((i[0], path + [i[1]], cost + i[2]), cost + i[2])
+                # print("VISIT PUSH", i[0])
+    return []
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -151,11 +175,30 @@ def nullHeuristic(state, problem=None):
     A heuristic function estimates the cost from the current state to the nearest
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
-    return 0
+    from searchAgents import manhattanHeuristic
+    # print("Heuristic", manhattanHeuristic(state, problem))
+    return manhattanHeuristic(state, problem)
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+    from game import Directions, PriorityQueue, Stack
+    fringe = PriorityQueue()
+    fringe.push((problem.getStartState(), [], 0), 0)
+    visitList = Stack()
+    while fringe :
+        node, path, cost = fringe.pop()
+        if not checkVisited(node, visitList):
+            visitList.push(node)
+            
+            if problem.isGoalState(node):
+                # print("DONE", path)
+                return path
+            
+            for i in problem.getSuccessors(node) :
+                
+                fringe.update((i[0], path + [i[1]], cost + i[2] + heuristic(i[0], problem)), i[2] + heuristic(i[0], problem))
+                # print("VISIT PUSH", i[0])
     util.raiseNotDefined()
 
 
