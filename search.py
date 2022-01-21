@@ -118,18 +118,19 @@ def breadthFirstSearch(problem):
     fringe = Queue()
     fringe.push((problem.getStartState(), []))
     visitList = Queue()
+    # count = 0
     while fringe :
         node, path = fringe.pop()
         if not checkVisited(node, visitList):
             visitList.push(node)
-            
+            # print("VISIT", node)
             if problem.isGoalState(node):
-                print("DONE", path)
+                # print("DONE", path)
                 return path
-            
-            for i in problem.getSuccessors(node) :
+            for i in reversed(problem.getSuccessors(node)) :
                 fringe.push((i[0], path + [i[1]]))
-                # print("VISIT PUSH", i[0])
+                # print("VISIT PUSH", i[0], path + [i[1]])
+    
     return []
 
 def checkVisited(current, visit):
@@ -175,9 +176,8 @@ def nullHeuristic(state, problem=None):
     A heuristic function estimates the cost from the current state to the nearest
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
-    from searchAgents import manhattanHeuristic
-    # print("Heuristic", manhattanHeuristic(state, problem))
-    return manhattanHeuristic(state, problem)
+    
+    return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
@@ -197,7 +197,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             
             for i in problem.getSuccessors(node) :
                 
-                fringe.update((i[0], path + [i[1]], cost + i[2] + heuristic(i[0], problem)), i[2] + heuristic(i[0], problem))
+                fringe.update((i[0], path + [i[1]], cost + i[2]), cost + i[2] + heuristic(i[0], problem))
                 # print("VISIT PUSH", i[0])
     util.raiseNotDefined()
 
