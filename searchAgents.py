@@ -366,7 +366,7 @@ def cornersHeuristic(state, problem):
     corners = state[1] # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
-    "*** YOUR CODE HERE ***"33
+    "*** YOUR CODE HERE ***"
     from util import manhattanDistance
     length = len(corners)
     heuristic = 99999999
